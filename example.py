@@ -12,5 +12,7 @@ def users_get():
 
 
 @app.post('/users')
-def users_post():
-    return 'POST /users'
+def user():
+    return 'Users', 302
+
+    
