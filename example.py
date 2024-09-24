@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
@@ -19,5 +19,15 @@ def user():
 def courses_show(id):
     return f'Course id: {id}'
 
+@app.route('/users/<id>')
+def users_show(id):
+    user = {
+        'id': id,
+        'name': f'user-{id}'
+    }
+    return render_template(
+        'users/show.html',
+        user=user,
+    )
 
     
