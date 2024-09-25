@@ -6,17 +6,10 @@
 <form action="/users" method="get">
     <input type="search" name="query" value="{{ search }}" />
     <input type="submit" value="Search" />
-  </form>  
-<table>
-     {% for user in users %}
-     <tr>
-       <td>
-           {{ user.id }}
-       </td>
-       <td>
-           {{ user.name }}
-       </td>
-     </tr>
+  </form> 
+<ul>
+  {% for user in users %}
+     <li>{{ user.name }}</li>
      {% endfor %}
- </table>
+</ul>
 {% endblock %}

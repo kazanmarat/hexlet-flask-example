@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request
+import json
+import uuid
+from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
 
@@ -30,8 +32,36 @@ def users_get():
 
 
 @app.post('/users')
-def user():
-    return 'Users', 302
+def users_post():
+    user_data = request.form.to_dict()
+    errors = validate(user_data)
+    if errors:
+        return render_template(
+            'users/new.html',
+            user=user_data,
+            errors=errors,
+        )
+    id = str(uuid.uuid4())
+    user = {
+        'id': id,
+        'name': user_data['name'],
+        'email': user_data['email']
+    }
+    users.append(user)
+    with open("./users.json", "w") as f:
+        json.dump(users, f)
+    return redirect('/users', code=302)
+
+
+@app.route('/users/new')
+def users_new():
+    user = {'name': '', 'email': ''}
+    errors = {}
+    return render_template(
+        'users/new.html',
+        user=user,
+        errors=errors,
+    )
 
 @app.route('/courses/<id>')
 def courses_show(id):
@@ -48,4 +78,10 @@ def users_show(id):
         user=user,
     )
 
-    
+def validate(user):
+    errors = {}
+    if not user['name']:
+        errors['name'] = "Can't be blank"
+    if not user['email']:
+        errors['email'] = "Can't be blank"
+    return errors
