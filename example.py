@@ -1,16 +1,12 @@
 import json
 import uuid
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, url_for, redirect
+from flask import flash, get_flashed_messages
 
 app = Flask(__name__)
+app.secret_key = "secret_key"
 
-users = [
-    {'id': 1, 'name': 'mike'},
-    {'id': 2, 'name': 'mishel'},
-    {'id': 3, 'name': 'adel'},
-    {'id': 4, 'name': 'keks'},
-    {'id': 5, 'name': 'kamila'}
-]
+users = json.load(open('./users.json', 'r'))
 
 @app.route('/')
 def index():
@@ -24,10 +20,12 @@ def users_get():
         if query in user['name']:
             filtered_users.append(user)
 
+    messages = get_flashed_messages(with_categories=True)
     return render_template(
         'users/index.html',
         users=filtered_users,
         search=query,
+        messages=messages,
     )
 
 
@@ -50,7 +48,8 @@ def users_post():
     users.append(user)
     with open("./users.json", "w") as f:
         json.dump(users, f)
-    return redirect('/users', code=302)
+    flash('User was added', 'success')
+    return redirect(url_for('users_get'), code=302)
 
 
 @app.route('/users/new')
