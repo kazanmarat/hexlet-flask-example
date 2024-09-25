@@ -2,6 +2,7 @@ import json
 import uuid
 from flask import Flask, render_template, request, url_for, redirect
 from flask import flash, get_flashed_messages
+from user_repository import UserRepository
 
 app = Flask(__name__)
 app.secret_key = "secret_key"
@@ -11,6 +12,18 @@ users = json.load(open('./users.json', 'r'))
 @app.route('/')
 def index():
     return 'Welcome to Flask!'
+
+
+@app.route('/users')
+def schools_index():
+    repo = UserRepository()
+    users = repo.get_content()
+
+    return render_template(
+           'users/index.html',
+           users=users,
+           )
+
 
 @app.get('/users/')
 def users_get():
@@ -62,16 +75,15 @@ def users_new():
         errors=errors,
     )
 
-@app.route('/courses/<id>')
-def courses_show(id):
-    return f'Course id: {id}'
 
 @app.route('/users/<id>')
 def users_show(id):
-    user = {
-        'id': id,
-        'name': f'user-{id}'
-    }
+    repo = UserRepository()
+    user = repo.find(id)
+
+    if not user:
+        return 'Page not found', 404
+
     return render_template(
         'users/show.html',
         user=user,
