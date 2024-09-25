@@ -13,8 +13,8 @@ users = [
 ]
 
 @app.route('/')
-def hello_world():
-    return 'Hello, Hexlet!'
+def index():
+    return 'Welcome to Flask!'
 
 @app.get('/users/')
 def users_get():
