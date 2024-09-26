@@ -2,7 +2,7 @@
 <form action="/users" method="post">
     <div>
       <label>
-        Имя
+        Nickname
         <input type="text" name="name" value="{{ user.name }}">
       </label>
       {% if errors['name'] %}
@@ -12,7 +12,8 @@
     <div>
       <label>
         Email
-        <input type="email" required name="email" value="{{ user.email }}">
+        <!-- <input type="email" required name="email" value="{{ user.email }}"> -->
+        <input type="text" name="email" value="{{ user.email }}">
       </label>
       {% if errors['email'] %}
         <div>{{ errors['email'] }}</div>

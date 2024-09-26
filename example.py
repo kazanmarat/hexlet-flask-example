@@ -13,32 +13,18 @@ users = json.load(open('./users.json', 'r'))
 def index():
     return 'Welcome to Flask!'
 
-
-@app.route('/users')
-def schools_index():
+@app.route('/users/')
+def users_get():
+    messages = get_flashed_messages(with_categories=True)
+    term = request.args.get('term', '')
     repo = UserRepository()
     users = repo.get_content()
-
-    return render_template(
-           'users/index.html',
-           users=users,
-           )
-
-
-@app.get('/users/')
-def users_get():
-    filtered_users = []
-    query = request.args.get('query', '')
-    for user in users:
-        if query in user['name']:
-            filtered_users.append(user)
-
-    messages = get_flashed_messages(with_categories=True)
+    filtered_users = [user for user in users if term in user['name']]
     return render_template(
         'users/index.html',
         users=filtered_users,
-        search=query,
-        messages=messages,
+        search=term,
+        messages=messages
     )
 
 
@@ -52,15 +38,8 @@ def users_post():
             user=user_data,
             errors=errors,
         )
-    id = str(uuid.uuid4())
-    user = {
-        'id': id,
-        'name': user_data['name'],
-        'email': user_data['email']
-    }
-    users.append(user)
-    with open("./users.json", "w") as f:
-        json.dump(users, f)
+    repo = UserRepository()
+    repo.save(user_data)
     flash('User was added', 'success')
     return redirect(url_for('users_get'), code=302)
 
@@ -91,6 +70,8 @@ def users_show(id):
 
 def validate(user):
     errors = {}
+    if len(user['name']) <= 4:
+        errors['name'] = "Nickname must be greater than 4 characters"
     if not user['name']:
         errors['name'] = "Can't be blank"
     if not user['email']:
