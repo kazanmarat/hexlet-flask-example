@@ -1,4 +1,5 @@
 <div>
     {{ user.id }}: {{ user.name }}
+    <a href="{{ url_for('users_edit', id=user.id) }}">Edit</a>
 </div>
   

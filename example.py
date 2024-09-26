@@ -68,9 +68,44 @@ def users_show(id):
         user=user,
     )
 
+
+@app.route('/users/<id>/edit')
+def users_edit(id):
+    repo = UserRepository()
+    user = repo.find(id)
+    errors = []
+
+    return render_template(
+           'users/edit.html',
+           user=user,
+           errors=errors,
+    )
+
+
+@app.route('/users/<id>/patch', methods=['POST'])
+def users_patch(id):
+    repo = UserRepository()
+    user = repo.find(id)
+    data = request.form.to_dict()
+    data['email'] = user['email']
+
+    errors = validate(data)
+    if errors:
+        return render_template(
+            'users/edit.html',
+            user=user,
+            errors=errors,
+        ), 422
+
+    user['name'] = data['name']
+    repo.save(user)
+    flash('User has been updated', 'success')
+    return redirect(url_for('users_get'))
+
+
 def validate(user):
     errors = {}
-    if len(user['name']) <= 4:
+    if len(user['name']) < 4:
         errors['name'] = "Nickname must be greater than 4 characters"
     if not user['name']:
         errors['name'] = "Can't be blank"
