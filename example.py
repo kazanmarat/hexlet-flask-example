@@ -102,6 +102,13 @@ def users_patch(id):
     flash('User has been updated', 'success')
     return redirect(url_for('users_get'))
 
+@app.route('/users/<id>/delete', methods=['POST'])
+def users_delete(id):
+    repo = UserRepository()
+    repo.destroy(id)
+    flash('user has been deleted', 'success')
+    return redirect(url_for('users_get'))
+
 
 def validate(user):
     errors = {}

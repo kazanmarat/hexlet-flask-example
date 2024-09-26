@@ -1,5 +1,10 @@
 <div>
     {{ user.id }}: {{ user.name }}
-    <a href="{{ url_for('users_edit', id=user.id) }}">Edit</a>
 </div>
-  
+
+<a href="{{ url_for('users_edit', id=user.id) }}">Edit</a>
+
+<form action="{{ url_for('users_delete', id=user.id) }}" method="post"
+onsubmit="return confirm('Are you sure you want to delete user? This action cannot be undone.');">
+<input type="submit" value="Remove">
+</form>
