@@ -1,13 +1,11 @@
 import json
-import uuid
 from flask import Flask, render_template, request, url_for, redirect
 from flask import flash, get_flashed_messages
-from user_repository import UserRepository
+from session_repository import UserRepository
 
 app = Flask(__name__)
 app.secret_key = "secret_key"
 
-users = json.load(open('./users.json', 'r'))
 
 @app.route('/')
 def index():
