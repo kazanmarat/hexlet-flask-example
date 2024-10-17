@@ -9,6 +9,8 @@ packages = [{include = "hexlet_flask_example"}]
 [tool.poetry.dependencies]
 python = "^3.9"
 flask = "^3.0.3"
+psycopg2-binary = "^2.9.9"
+python-dotenv = "^1.0.1"
 
 
 [build-system]

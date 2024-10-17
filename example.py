@@ -1,7 +1,13 @@
-import json
 from flask import Flask, render_template, request, url_for, redirect
 from flask import flash, get_flashed_messages
-from session_repository import UserRepository
+from db_repository import UserRepository
+import psycopg2
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+conn = psycopg2.connect(os.getenv('DATABASE_URL'))
+repo = UserRepository(conn)
 
 app = Flask(__name__)
 app.secret_key = "secret_key"
@@ -14,13 +20,14 @@ def index():
 @app.route('/users/')
 def users_get():
     messages = get_flashed_messages(with_categories=True)
-    term = request.args.get('term', '')
-    repo = UserRepository()
-    users = repo.get_content()
-    filtered_users = [user for user in users if term in user['name']]
+    term = request.args.get('query', '')
+    if term:
+        users = repo.get_by_term(term)
+    else:
+        users = repo.get_content()
     return render_template(
         'users/index.html',
-        users=filtered_users,
+        users=users,
         search=term,
         messages=messages
     )
@@ -36,7 +43,6 @@ def users_post():
             user=user_data,
             errors=errors,
         )
-    repo = UserRepository()
     repo.save(user_data)
     flash('User was added', 'success')
     return redirect(url_for('users_get'), code=302)
@@ -55,12 +61,9 @@ def users_new():
 
 @app.route('/users/<id>')
 def users_show(id):
-    repo = UserRepository()
     user = repo.find(id)
-
     if not user:
         return 'Page not found', 404
-
     return render_template(
         'users/show.html',
         user=user,
@@ -69,10 +72,8 @@ def users_show(id):
 
 @app.route('/users/<id>/edit')
 def users_edit(id):
-    repo = UserRepository()
     user = repo.find(id)
     errors = []
-
     return render_template(
            'users/edit.html',
            user=user,
@@ -82,7 +83,6 @@ def users_edit(id):
 
 @app.route('/users/<id>/patch', methods=['POST'])
 def users_patch(id):
-    repo = UserRepository()
     user = repo.find(id)
     data = request.form.to_dict()
     data['email'] = user['email']
@@ -102,7 +102,6 @@ def users_patch(id):
 
 @app.route('/users/<id>/delete', methods=['POST'])
 def users_delete(id):
-    repo = UserRepository()
     repo.destroy(id)
     flash('user has been deleted', 'success')
     return redirect(url_for('users_get'))
