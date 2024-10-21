@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect
 from flask import flash, get_flashed_messages
-from db_repository import UserRepository
+from hexlet_flask_example.db_repository import UserRepository
 import psycopg2
 import os
 from dotenv import load_dotenv
