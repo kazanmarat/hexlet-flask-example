@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-psql -a -d $DATABASE_URL -f init.sql
+psql -a -d postgresql://worka:jkl@:5432/hexlet -f init.sql
